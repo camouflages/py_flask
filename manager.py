@@ -2,11 +2,12 @@ from flask_script import Manager
 from flask_migrate import Migrate,MigrateCommand
 from zhihu import app
 from exts import db
+from models import User
 
-manager=Manager()
+manager=Manager(app)
 
 #使用migrate 绑定app和db
-migrate=Migrate()
+migrate=Migrate(app,db)
 
 #添加迁移脚本命令道manager中
 
