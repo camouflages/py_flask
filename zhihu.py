@@ -1,9 +1,8 @@
 from flask import Flask,render_template,request
-import config
-
+from  config import *
 
 app=Flask(__name__)
-app.config.from_object(config)
+app.config.from_object(DevelopmentConfig)
 
 @app.route('/')
 def index():

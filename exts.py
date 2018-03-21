@@ -1,4 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
+from zhihu import app
 
-
-db=SQLAlchemy()
+db=SQLAlchemy(app)
