@@ -1,5 +1,5 @@
 from exts import db
-from sqlalchemy import Column
+
 
 
 class User(db.Model):

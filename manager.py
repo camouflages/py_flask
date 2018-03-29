@@ -4,6 +4,7 @@ from zhihu import app
 from exts import db
 from models import User
 
+
 manager=Manager(app)
 
 #使用migrate 绑定app和db
