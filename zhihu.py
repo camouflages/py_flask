@@ -2,7 +2,7 @@ from flask import Flask,render_template,request,redirect,url_for,session
 import config
 from models import User
 from exts import db
-
+from functools import wraps
 
 
 app=Flask(__name__)
@@ -10,6 +10,16 @@ app.config.from_object(config)
 db.init_app(app)
 
 
+
+#登录限制
+def login_required(func):
+    @wraps(func)
+    def wrapper(*args,**kwargs):
+         if session.get('user_id'):
+             return func(*args,**kwargs)
+         else:
+            return redirect(url_for('login'))
+    return  wrapper
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -50,6 +60,19 @@ def regist():
                 db.session.commit()
 
                 return redirect(url_for('login'))
+@app.route('/logout/')
+def logout():
+    session.clear()
+    return  redirect(url_for('login'))
+
+
+@app.route('/question/')
+@login_required
+def question():
+    if request.method=='GET':
+        return render_template('question.html')
+    else:
+        pass
 
 
 if __name__=='__main__':
