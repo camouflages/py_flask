@@ -1,6 +1,6 @@
 from flask import Flask,render_template,request,redirect,url_for,session
 import config
-from models import User,Question
+from models import User,Question,Answer
 from exts import db
 from functools import wraps
 
@@ -22,7 +22,10 @@ def login_required(func):
     return  wrapper
 @app.route('/')
 def index():
-    return render_template('index.html')
+    context={
+        "questions":Question.query.order_by('-create_time').all()
+    }
+    return render_template('index.html',**context)
 
 @app.route('/login/',methods=['GET','POST'])
 def login():
@@ -66,7 +69,7 @@ def logout():
     return  redirect(url_for('login'))
 
 
-@app.route('/question/')
+@app.route('/question/',methods=['GET','POST'])
 @login_required
 def question():
     if request.method=='GET':
@@ -80,6 +83,24 @@ def question():
         question.author=user
         db.session.add(question)
         db.session.commit()
+
+@app.route('/detail/<question_id>')
+def detail(question_id):
+    question_model=Question.query.filter(Question.id==question_id).first()
+    return render_template('detail.html',question=question_model)
+
+@app.route('/add_answer/',methods=['POST'])
+@login_required
+def add_answer():
+    content=request.form.get('answer_content')
+    question_id = request.form.get('question_id')
+    answer=Answer(content=content)
+    user_id=session['user_id']
+    answer.author=User.query.filter(User.id==user_id).first()
+    answer.question=Question.query.filter(Question.id == question_id).first()
+    db.session.add(answer)
+    db.session.commit()
+    return redirect(url_for('detail',question_id=question_id))
 
 
 if __name__=='__main__':
